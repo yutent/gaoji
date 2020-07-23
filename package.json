@@ -1,0 +1,40 @@
+{
+  "name": "io.yutent.gaystat",
+  "version": "0.0.1",
+  "description": "搞基数据",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder",
+    "pack:mac": "electron-builder --mac"
+  },
+  "author": {
+    "name": "yutent",
+    "email": "yutent.io@gmail.com"
+  },
+  "homepage": "https://yutent.me",
+  "license": "MIT",
+  "build": {
+    "appId": "cc.yutent.typec",
+    "productName": "typec",
+    "copyright": "Copyright © 2019 ${author}",
+    "directories": {
+      "buildResources": "icons",
+      "output": "build"
+    },
+    "files": ["src/**/*", "node_modules/iofs/*"],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": "dmg",
+      "icon": "icons/app.icns",
+      "darkModeSupport": false
+    }
+  },
+  "devDependencies": {
+    "electron": "^9.0.0",
+    "electron-builder": "^22.0.0"
+  },
+  "dependencies": {
+    "iofs": "^1.3.2"
+  }
+}

@@ -1,0 +1,16 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+.idea
+._*
+.Spotlight-V100
+.Trashes
+
+
+build
+build/**
+
+node_modules
+node_modules/**
+
+package-lock.json

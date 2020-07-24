@@ -137,7 +137,7 @@ Anot({
       item.percent = +info.gszzl
 
       Anot.ls('watch_list', this.list.$model)
-      layer.toast('更新成功', 'success')
+      // layer.toast('更新成功', 'success')
     },
 
     removeGay(item) {

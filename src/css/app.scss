@@ -40,7 +40,7 @@ body {
     content:"";
   }
 
-  .option {
+  .option, .close {
     position:absolute;
     right:px(6);top:px(2);
     --size: #{px(14)};
@@ -51,6 +51,7 @@ body {
       opacity:1;
     }
   }
+  .close {right:auto;left:px(6)}
 
   .list {
     flex:1;

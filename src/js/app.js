@@ -78,6 +78,9 @@ Anot({
     }
   },
   methods: {
+    close() {
+      WIN.close()
+    },
     getTodayStat(id) {
       var res = ipcRenderer.sendSync(
         'net',
@@ -134,6 +137,7 @@ Anot({
       item.percent = +info.gszzl
 
       Anot.ls('watch_list', this.list.$model)
+      layer.toast('更新成功', 'success')
     },
 
     removeGay(item) {

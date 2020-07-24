@@ -15,7 +15,8 @@ module.exports = function(win) {
 
   app.__TRAY__.on('click', _ => {
     var b = app.__TRAY__.getBounds()
-    win.setBounds({ x: b.x - 185, y: b.y + b.height + 4 })
+    win.setBounds({ x: b.x - 150, y: b.y + b.height + 4 })
     win.show()
+    win.focus()
   })
 }

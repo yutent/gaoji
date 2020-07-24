@@ -59,7 +59,7 @@ protocol.registerSchemesAsPrivileged([
 
 /* ----------------------------------------------------- */
 
-// app.dock.hide()
+app.dock.hide()
 
 //  初始化应用
 app.once('ready', () => {
@@ -74,7 +74,7 @@ app.once('ready', () => {
   // 创建浏览器窗口
   let win = new BrowserWindow({
     title: '',
-    width: 375,
+    width: 320,
     height: 360,
     resizable: false,
     maximizable: false,
@@ -94,7 +94,7 @@ app.once('ready', () => {
     win = null
   })
 
-  win.openDevTools()
+  // win.openDevTools()
 
   // 然后加载应用的 index.html
   win.loadURL('app://local/index.html')
@@ -102,6 +102,7 @@ app.once('ready', () => {
   createMenu(win)
   createTay(win)
 })
+
 ipcMain.on('net', (ev, url) => {
   fetch(url).then(r => {
     ev.returnValue = r

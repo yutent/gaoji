@@ -9,8 +9,34 @@
   <link href="/css/app.css" rel="stylesheet">
   <script src="/js/app.js" type="module"></script>
 </head>
-<body anot="app" class="do-fn-noselect">
+<body class="do-fn-noselect">
 
+  <div class="app" anot="app">
+    <wc-icon class="option" is="option" @click="addGay"></wc-icon>
+
+    <wc-scroll class="list">
+      <section class="item" :for="it in list">
+        <div class="info"  @dblclick="removeGay(it)">
+          <h3 class="do-fn-ell" :text="it.name"></h3>
+          <cite :text="it.code"></cite>
+        </div>
+        <ul class="last-week">
+          <li 
+            :for="d in it.last"
+            :css="{height: d.h}">
+          </li>
+        </ul>
+        <div class="today" @dblclick="updateGay(it)">
+          <span class="money" :text="it.curr"></span>
+          <span 
+            class="percent" 
+            :class="{red: it.percent > 0, green: it.percent < 0}" 
+            :text="it.percent + '%'">
+          </span>
+        </div>
+      </section>
+    </wc-scroll>
+  </div>
   
   
 </body>

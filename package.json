@@ -1,6 +1,6 @@
 {
   "name": "io.yutent.gaystat",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "搞基数据",
   "main": "src/main.js",
   "scripts": {
@@ -15,8 +15,8 @@
   "homepage": "https://yutent.me",
   "license": "MIT",
   "build": {
-    "appId": "cc.yutent.typec",
-    "productName": "typec",
+    "appId": "io.yutent.gaystat",
+    "productName": "gaystat",
     "copyright": "Copyright © 2019 ${author}",
     "directories": {
       "buildResources": "icons",

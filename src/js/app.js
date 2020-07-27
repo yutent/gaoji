@@ -131,7 +131,7 @@ Anot({
     updateGay(item) {
       var info = this.getTodayStat(item.code)
       if (info.dwjz !== item.yesterday) {
-        item.last = this.getLastWeek(id)
+        item.last = this.getLastWeek(item.code)
       }
       item.curr = info.gsz
       item.percent = +info.gszzl

@@ -10,3 +10,4 @@ npm run pack
 ```
 
 
+![preview](./preview.jpg)

@@ -142,6 +142,10 @@ Anot({
       item.curr = info.gsz
       item.percent = +info.gszzl
 
+      this.list.sort((a, b) => {
+        return b.percent - a.percent
+      })
+
       Anot.ls('watch_list', this.list.$model)
     },
 

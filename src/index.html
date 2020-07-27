@@ -21,12 +21,9 @@
           <h3 class="do-fn-ell" :text="it.name"></h3>
           <cite :text="it.code"></cite>
         </div>
-        <ul class="last-week">
-          <li 
-            :for="d in it.last"
-            :css="{height: d.h}">
-          </li>
-        </ul>
+
+        <canvas class="last-week" width="70" height="30" :draw="it.last"></canvas>
+
         <div class="today" @dblclick="updateGay(it)">
           <span class="money" :text="it.curr"></span>
           <span 

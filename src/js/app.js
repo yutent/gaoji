@@ -9,6 +9,7 @@
 import '/lib/anot.js'
 import '/lib/form/button.js'
 import '/lib/scroll/index.js'
+import '/lib/canvas-draw.js'
 
 import layer from '/lib/layer/index.js'
 import Utils from '/lib/utils.js'
@@ -32,16 +33,19 @@ function getTableData(str) {
   var max = 0
 
   table.innerHTML = match[0]
-  list = Array.from(table.children[0].children).map(it => {
-    let m = +it.children[1].textContent
-    if (m > max) {
-      max = m
-    }
-    return { m }
-  })
+  list = Array.from(table.children[0].children)
+    .map(it => {
+      let m = +it.children[1].textContent
+      if (m > max) {
+        max = m
+      }
+      return { m }
+    })
+    .reverse()
+
   max = Math.ceil(max)
   list.forEach(it => {
-    it.h = ((100 * it.m) / max).toFixed(2) + '%'
+    it.h = +((it.m * 30) / max).toFixed(2)
   })
   return list
 }
@@ -89,13 +93,14 @@ Anot({
       return getJsonp(res)
     },
 
-    getLastWeek(id) {
+    getLastMonth(id) {
       var res = ipcRenderer.sendSync(
         'net',
-        `https://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&code=${id}`
+        `https://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&per=30&code=${id}`
       )
       return getTableData(res)
     },
+
     addGay() {
       layer
         .prompt('请输入鸡精代号', (val, done) => {
@@ -109,7 +114,7 @@ Anot({
           }
           Anot.nextTick(_ => {
             var info = this.getTodayStat(id)
-            var last = this.getLastWeek(id)
+            var last = this.getLastMonth(id)
             if (info) {
               var tmp = {
                 code: info.fundcode,
@@ -131,13 +136,13 @@ Anot({
     updateGay(item) {
       var info = this.getTodayStat(item.code)
       if (info.dwjz !== item.yesterday) {
-        item.last = this.getLastWeek(item.code)
+        item.yesterday = info.dwjz
+        item.last = this.getLastMonth(item.code)
       }
       item.curr = info.gsz
       item.percent = +info.gszzl
 
       Anot.ls('watch_list', this.list.$model)
-      // layer.toast('更新成功', 'success')
     },
 
     removeGay(item) {

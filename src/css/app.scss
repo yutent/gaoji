@@ -40,7 +40,7 @@ body {
     content:"";
   }
 
-  .option, .close {
+  .option, .close, .load {
     position:absolute;
     right:px(6);top:px(2);
     --size: #{px(14)};
@@ -52,6 +52,7 @@ body {
     }
   }
   .close {right:auto;left:px(6)}
+  .load {right:auto;left:px(155)}
 
   .list {
     flex:1;

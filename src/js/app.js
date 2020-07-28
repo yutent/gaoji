@@ -141,12 +141,6 @@ Anot({
       }
       item.curr = info.gsz
       item.percent = +info.gszzl
-
-      this.list.sort((a, b) => {
-        return b.percent - a.percent
-      })
-
-      Anot.ls('watch_list', this.list.$model)
     },
 
     removeGay(item) {
@@ -158,6 +152,18 @@ Anot({
           Anot.ls('watch_list', this.list.$model)
         })
         .catch(Anot.noop)
+    },
+
+    updateGays() {
+      for (let it of this.list) {
+        this.updateGay(it)
+      }
+
+      this.list.sort((a, b) => {
+        return b.percent - a.percent
+      })
+
+      Anot.ls('watch_list', this.list.$model)
     }
   }
 })

@@ -13,6 +13,7 @@
 
   <div class="app" anot="app">
     <wc-icon class="close" color="red" is="close" @click="close"></wc-icon>
+    <wc-icon class="load" color="red" is="load" @click="updateGays"></wc-icon>
     <wc-icon class="option" is="option" @click="addGay"></wc-icon>
 
     <wc-scroll class="list">
@@ -24,7 +25,7 @@
 
         <canvas class="last-week" width="70" height="30" :draw="it.last"></canvas>
 
-        <div class="today" @dblclick="updateGay(it)">
+        <div class="today">
           <span class="money" :text="it.curr"></span>
           <span 
             class="percent" 

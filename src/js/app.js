@@ -31,6 +31,7 @@ function getTableData(str) {
   var table = document.createElement('table')
   var list = []
   var max = 0
+  var min = 99
 
   table.innerHTML = match[0]
   list = Array.from(table.children[0].children)
@@ -39,13 +40,15 @@ function getTableData(str) {
       if (m > max) {
         max = m
       }
+      if (m < min) {
+        min = m
+      }
       return { m }
     })
     .reverse()
 
-  max = Math.ceil(max)
   list.forEach(it => {
-    it.h = +((it.m * 30) / max).toFixed(2)
+    it.h = +(((it.m - min) * 25) / (max - min)).toFixed(2)
   })
   return list
 }

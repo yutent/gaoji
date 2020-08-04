@@ -36,7 +36,7 @@ function getTableData(str) {
   table.innerHTML = match[0]
   list = Array.from(table.children[0].children)
     .map(it => {
-      let m = +it.children[1].textContent
+      let m = +it.children[2].textContent
       if (m > max) {
         max = m
       }
@@ -48,7 +48,7 @@ function getTableData(str) {
     .reverse()
 
   list.forEach(it => {
-    it.h = +(((it.m - min) * 25) / (max - min)).toFixed(2)
+    it.h = +(((it.m - min) * 60) / (max - min)).toFixed(2)
   })
   return list
 }
@@ -99,7 +99,7 @@ Anot({
     getLastMonth(id) {
       var res = ipcRenderer.sendSync(
         'net',
-        `https://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&per=30&code=${id}`
+        `https://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&per=42&code=${id}`
       )
       return getTableData(res)
     },

@@ -23,7 +23,10 @@ const WIN = remote.getCurrentWindow()
 const $doc = Anot(document)
 
 function getJsonp(str) {
-  return new Function(`function jsonpgz(d){return d}; return ${str}`)()
+  if (~str.indexOf('jsonpgz')) {
+    return new Function(`function jsonpgz(d){return d}; return ${str}`)()
+  }
+  return false
 }
 
 function getTableData(str) {
@@ -93,6 +96,7 @@ Anot({
         'net',
         `https://fundgz.1234567.com.cn/js/${id}.js`
       )
+
       return getJsonp(res)
     },
 
@@ -117,8 +121,9 @@ Anot({
           }
           Anot.nextTick(_ => {
             var info = this.getTodayStat(id)
-            var last = this.getLastMonth(id)
+            var last
             if (info) {
+              last = this.getLastMonth(id)
               var tmp = {
                 code: info.fundcode,
                 name: info.name,
@@ -130,6 +135,8 @@ Anot({
               this.list.unshift(tmp)
               this.$dict[tmp.code] = this.list[0]
               Anot.ls('watch_list', this.list.$model)
+            } else {
+              layer.toast('鸡精不存在', 'error')
             }
           })
         })

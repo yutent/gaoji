@@ -16,9 +16,9 @@ import Utils from '/lib/utils.js'
 
 const log = console.log
 
-const { remote, ipcRenderer } = require('electron')
+const { ipcRenderer } = require('electron')
 
-const WIN = remote.getCurrentWindow()
+// const WIN = remote.getCurrentWindow()
 
 const $doc = Anot(document)
 
@@ -72,14 +72,13 @@ Anot({
     }
   },
   mounted() {
-    WIN.on('blur', _ => {
-      WIN.hide()
-    })
+    // WIN.on('blur', _ => {
+    //   WIN.hide()
+    // })
 
     var watch_list = Anot.ls('watch_list') || '[]'
-    if (watch_list) {
-      watch_list = JSON.parse(watch_list)
-    }
+
+    watch_list = JSON.parse(watch_list)
 
     this.list = watch_list
 
@@ -89,7 +88,7 @@ Anot({
   },
   methods: {
     close() {
-      WIN.close()
+      // WIN.close()
     },
     getTodayStat(id) {
       var res = ipcRenderer.sendSync(

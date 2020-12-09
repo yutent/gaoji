@@ -80,12 +80,17 @@ app.once('ready', () => {
     maximizable: false,
     frame: false,
     transparent: true,
-    show: false,
+    hasShadow: false,
+    // backgroundColor: '#80585858',
+    // show: false,
+    vibrancy: 'dark',
+    visualEffectState: 'active',
     icon: path.resolve(ROOT, './images/app.png'),
     webPreferences: {
-      webSecurity: false,
+      // webSecurity: false,
       experimentalFeatures: true,
-      nodeIntegration: true
+      nodeIntegration: true,
+      spellcheck: false
     }
   })
 

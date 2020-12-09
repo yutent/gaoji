@@ -6,15 +6,15 @@
 
 'use strict'
 
-const { app, Tray } = require('electron')
+const { Tray } = require('electron')
 const path = require('path')
 const ROOT = __dirname
 
 module.exports = function(win) {
-  app.__TRAY__ = new Tray(path.join(ROOT, '../images/tray.png'))
+  win.__TRAY__ = new Tray(path.join(ROOT, '../images/tray.png'))
 
-  app.__TRAY__.on('click', _ => {
-    var b = app.__TRAY__.getBounds()
+  win.__TRAY__.on('click', _ => {
+    var b = win.__TRAY__.getBounds()
     win.setBounds({ x: b.x - 150, y: b.y + b.height + 4 })
     win.show()
     win.focus()

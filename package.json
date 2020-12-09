@@ -1,6 +1,6 @@
 {
   "name": "io.yutent.gaystat",
-  "version": "1.7.0",
+  "version": "2.0.0",
   "description": "搞基数据",
   "main": "src/main.js",
   "scripts": {
@@ -12,15 +12,19 @@
     "name": "yutent",
     "email": "yutent.io@gmail.com"
   },
-  "homepage": "https://yutent.me",
+  "homepage": "https://yutent.top",
   "license": "MIT",
   "build": {
     "appId": "io.yutent.gaystat",
-    "productName": "gaystat",
+    "productName": "GayStat",
     "copyright": "Copyright © 2019 ${author}",
     "directories": {
       "buildResources": "icons",
       "output": "build"
+    },
+    "electronDownload": {
+      "version": "11.0.4",
+      "mirror": "https://npm.taobao.org/mirrors/electron/"
     },
     "files": ["src/**/*", "node_modules/iofs/*"],
     "mac": {
@@ -31,8 +35,8 @@
     }
   },
   "devDependencies": {
-    "electron": "^9.0.0",
-    "electron-builder": "^22.0.0"
+    "electron": "11.0.4",
+    "electron-builder": "^22.1.0"
   },
   "dependencies": {
     "iofs": "^1.3.2"

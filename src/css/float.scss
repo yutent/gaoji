@@ -1,0 +1,98 @@
+@charset "UTF-8";
+/**
+ * 浮窗样式
+ * @authors yutent<yutent@doui.cc>
+ * @date 2018/12/16 17:15:07
+ */
+
+html {
+  font-size: 12.8px;
+  width: 100%;
+  height: 100vh;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  line-height: 1.25;
+  font-size: 14px;
+  color: var(--color-dark-1);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.app-drag {
+  -webkit-app-region: drag;
+  user-select: none;
+}
+.app-nodrag {
+  -webkit-app-region: no-drag;
+}
+
+.app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 6px 0;
+  border-radius: 6px;
+
+  .list {
+    flex: 1;
+
+    .item {
+      display: flex;
+      align-items: center;
+      height: 54px;
+      padding: 10px 12px;
+      line-height: 15px;
+      border-bottom: 1px solid var(--color-plain-3);
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      .info {
+        overflow: hidden;
+        flex: 1;
+
+        h3 {
+          font-size: 14px;
+        }
+        cite {
+          color: var(--color-grey-2);
+        }
+      }
+
+      .last-days {
+        display: flex;
+        width: 64px;
+        height: 30px;
+        margin: 0 6px;
+      }
+
+      .today {
+        width: 52px;
+        font-size: 12px;
+        text-align: right;
+
+        span {
+          display: block;
+          padding: 0 4px;
+        }
+        .percent {
+          border-radius: 2px;
+          color: #fff;
+
+          &.red {
+            background: var(--color-red-1);
+          }
+          &.green {
+            background: var(--color-green-3);
+          }
+        }
+      }
+    }
+  }
+}

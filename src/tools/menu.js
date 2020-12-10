@@ -1,21 +1,25 @@
 /**
  * 菜单项
- * @author yutent<yutent@doui.cc>
- * @date 2019/01/21 20:34:04
+ * @author yutent<yutent.io@gmail.com>
+ * @date 2020/12/10 19:30:02
  */
-
-'use strict'
 
 const { Menu } = require('electron')
 
 module.exports = function(win) {
-  let menuList = Menu.buildFromTemplate([
+  var menuList = Menu.buildFromTemplate([
     {
       label: '搞基数据',
       submenu: [
         { role: 'about', label: '关于搞基数据' },
         { type: 'separator' },
-        { role: 'quit', label: '退出' }
+        {
+          label: '退出',
+          accelerator: 'Command+Q',
+          click(a, b, ev) {
+            win.destroy()
+          }
+        }
       ]
     },
     {

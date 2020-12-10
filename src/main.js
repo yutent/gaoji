@@ -8,10 +8,8 @@ const { app, BrowserWindow, protocol, ipcMain, net } = require('electron')
 const path = require('path')
 const fs = require('iofs')
 
-const createMenu = require('./tools/menu')
-const createTay = require('./tools/tray')
+const { createMainWindow, createFloatWindow } = require('./tools/window')
 
-const log = console.log
 const MIME_TYPES = {
   '.js': 'text/javascript',
   '.html': 'text/html',
@@ -59,7 +57,7 @@ protocol.registerSchemesAsPrivileged([
 
 /* ----------------------------------------------------- */
 
-app.dock.hide()
+// app.dock.hide()
 
 //  初始化应用
 app.once('ready', () => {
@@ -72,44 +70,20 @@ app.once('ready', () => {
   })
 
   // 创建浏览器窗口
-  let win = new BrowserWindow({
-    title: '',
-    width: 320,
-    height: 360,
-    resizable: false,
-    maximizable: false,
-    frame: false,
-    transparent: true,
-    hasShadow: false,
-    // backgroundColor: '#80585858',
-    // show: false,
-    vibrancy: 'dark',
-    visualEffectState: 'active',
-    icon: path.resolve(ROOT, './images/app.png'),
-    webPreferences: {
-      // webSecurity: false,
-      experimentalFeatures: true,
-      nodeIntegration: true,
-      spellcheck: false
-    }
-  })
+  app.__main__ = createMainWindow(path.resolve(ROOT, './images/app.png'))
+  app.__float__ = createFloatWindow()
 
-  win.on('closed', () => {
+  app.__main__.on('closed', () => {
+    app.__main__ = null
+    app.__float__ = null
     app.exit()
-    win = null
   })
-
-  // win.openDevTools()
-
-  // 然后加载应用的 index.html
-  win.loadURL('app://local/index.html')
-
-  createMenu(win)
-  createTay(win)
 })
 
-ipcMain.on('net', (ev, url) => {
-  fetch(url).then(r => {
-    ev.returnValue = r
-  })
+ipcMain.on('app', (ev, conn) => {
+  if (conn.type === 'fetch') {
+    fetch(conn.data).then(r => {
+      ev.returnValue = r
+    })
+  }
 })

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title></title>
+  <link href="/lib/css/reset-basic.css" rel="stylesheet">
+  <link href="/css/float.css" rel="stylesheet">
+  <script src="/js/float.js" type="module"></script>
+</head>
+<body class="do-fn-noselect">
+
+  <div class="app" anot="app">
+    <wc-scroll class="list">
+      <section class="item" :for="it in list">
+        <div class="info">
+          <h3 class="do-fn-ell" :text="it.name"></h3>
+          <cite :text="it.code"></cite>
+        </div>
+
+        <canvas class="last-days" width="128" height="60" :draw="it.last"></canvas>
+
+        <div class="today">
+          <span class="money" :text="it.curr"></span>
+          <span 
+            class="percent" 
+            :class="{red: it.percent > 0, green: it.percent < 0}" 
+            :text="it.percent + '%'">
+          </span>
+        </div>
+      </section>
+    </wc-scroll>
+  </div>
+  
+  
+</body>
+</html>

@@ -1,10 +1,8 @@
 /**
  * 托盘
  * @author yutent<yutent.io@gmail.com>
- * @date 2019/01/21 20:42:07
+ * @date 2020/12/10 19:30:20
  */
-
-'use strict'
 
 const { Tray } = require('electron')
 const path = require('path')
@@ -15,8 +13,9 @@ module.exports = function(win) {
 
   win.__TRAY__.on('click', _ => {
     var b = win.__TRAY__.getBounds()
-    win.setBounds({ x: b.x - 150, y: b.y + b.height + 4 })
+    win.setBounds({ x: b.x - 145, y: b.y + b.height })
     win.show()
     win.focus()
+    win.webContents.send('app', { type: 'float-visible', data: null })
   })
 }

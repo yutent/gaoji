@@ -9,13 +9,13 @@
   <link href="/css/float.css" rel="stylesheet">
   <script src="/js/float.js" type="module"></script>
 </head>
-<body class="do-fn-noselect">
+<body class="noselect">
 
   <div class="app" anot="app">
     <wc-scroll class="list">
       <section class="item" :for="it in list">
         <div class="info">
-          <h3 class="do-fn-ell" :text="it.name"></h3>
+          <h3 class="text-ell" :text="it.name"></h3>
           <cite :text="it.code"></cite>
         </div>
 

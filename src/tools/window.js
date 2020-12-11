@@ -15,8 +15,8 @@ const createTay = require('./tray')
 exports.createMainWindow = function(icon) {
   var win = new BrowserWindow({
     title: '搞基数据',
-    width: 820,
-    height: 460,
+    width: 1024,
+    height: 540,
     frame: false,
     titleBarStyle: 'hiddenInset',
     resizable: false,
@@ -44,10 +44,10 @@ exports.createMainWindow = function(icon) {
 
   createMenu(win)
 
-  // win.on('ready-to-show', _ => {
-  //   win.show()
-  //   win.openDevTools()
-  // })
+  win.on('ready-to-show', _ => {
+    win.show()
+    win.openDevTools()
+  })
 
   win.on('close', ev => {
     ev.preventDefault()

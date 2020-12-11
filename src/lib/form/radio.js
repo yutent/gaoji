@@ -1,14 +1,129 @@
 /**
  *
  * @authors yutent (yutent.io@gmail.com)
- * @date    2020-07-22 19:57:05
- * @version v2.0.1
+ * @date    2020-12-08 11:30:52
+ * @version v1.0.0
  * 
  */
 
-'use strict'
 
-import $ from"../utils.js";export default class Radio extends HTMLElement{static get observedAttributes(){return["label","checked","readonly","disabled"]}constructor(){super(),Object.defineProperty(this,"root",{value:this.attachShadow({mode:"open"}),writable:!0,enumerable:!1,configurable:!0}),Object.defineProperty(this,"props",{value:{label:"",checked:!1,readonly:!1,disabled:!1},writable:!0,enumerable:!1,configurable:!0}),this.root.innerHTML="<style>*{box-sizing:border-box;margin:0;padding:0}::before,::after{box-sizing:border-box}:host{display:inline-block;line-height:1;font-size:14px}:host label{display:flex;justify-content:center;align-items:center;min-width:32px;height:32px;padding:0 5px;line-height:0;-moz-user-select:none;user-select:none;white-space:nowrap;cursor:inherit;color:#757575}:host label.checked .dot::after{content:''}:host .dot{display:flex;justify-content:center;align-items:center;width:18px;height:18px;padding:2px;margin-right:3px;border:1px solid #bdbdbd;border-radius:50%;background:#fff}:host .dot::after{display:block;width:12px;height:12px;border-radius:50%;background:#bdbdbd}:host([readonly]){opacity:0.8}:host([disabled]){cursor:not-allowed;opacity:0.6}:host([size='large']) label{min-width:58px;height:32px}:host([size='large']) .dot{width:26px;height:26px}:host([size='large']) .dot::after{width:18px;height:18px}:host([size='medium']) label{min-width:50px;height:28px}:host([size='medium']) .dot{width:22px;height:22px}:host([size='medium']) .dot::after{width:14px;height:14px}:host([size='mini']) label{height:14px}:host([size='mini']) .dot{width:14px;height:14px}:host([size='mini']) .dot::after{width:8px;height:8px}:host([color='red']) label.checked{color:#ff5061}:host([color='red']) label.checked .dot{border-color:#ff5061}:host([color='red']) label.checked .dot::after{background:#ff5061}:host([color='blue']) label.checked{color:#64b5f6}:host([color='blue']) label.checked .dot{border-color:#64b5f6}:host([color='blue']) label.checked .dot::after{background:#64b5f6}:host([color='green']) label.checked{color:#81c784}:host([color='green']) label.checked .dot{border-color:#81c784}:host([color='green']) label.checked .dot::after{background:#81c784}:host([color='teal']) label.checked{color:#4db6ac}:host([color='teal']) label.checked .dot{border-color:#4db6ac}:host([color='teal']) label.checked .dot::after{background:#4db6ac}:host([color='orange']) label.checked{color:#ffb618}:host([color='orange']) label.checked .dot{border-color:#ffb618}:host([color='orange']) label.checked .dot::after{background:#ffb618}:host([color='dark']) label.checked{color:#62778d}:host([color='dark']) label.checked .dot{border-color:#62778d}:host([color='dark']) label.checked .dot::after{background:#62778d}:host([color='purple']) label.checked{color:#9575cd}:host([color='purple']) label.checked .dot{border-color:#9575cd}:host([color='purple']) label.checked .dot::after{background:#9575cd}</style> <label> <span class=\"dot\"></span> <slot></slot> </label> ",this.__SWITCH__=this.root.lastElementChild}get value(){return this.props.label}set value(e){this.checked=this.props.label===e}get checked(){return this.props.checked}set checked(e){this.props.checked=!!e,this.__SWITCH__.classList.toggle("checked",this.props.checked)}get readOnly(){return this.props.readonly}set readOnly(e){var o=typeof e;e!==this.props.readonly&&("boolean"===o&&e||"boolean"!==o?(this.props.readonly=!0,this.setAttribute("readonly","")):(this.props.readonly=!1,this.removeAttribute("readonly")))}get disabled(){return this.props.disabled}set disabled(e){var o=typeof e;e!==this.props.disabled&&("boolean"===o&&e||"boolean"!==o?(this.props.disabled=!0,this.setAttribute("disabled","")):(this.props.disabled=!1,this.removeAttribute("disabled")))}connectedCallback(){this._handleClick=$.catch(this,"click",e=>{this.disabled||this.readOnly||this.checked||(this.checked=!0,this.dispatchEvent(new CustomEvent("input")))})}disconnectedCallback(){$.unbind(this,"click",this._handleClick)}attributeChangedCallback(e,o,t){if(null!==t&&o!==t)switch(e){case"label":this.props.label=t;break;case"checked":case"readonly":case"disabled":var l=e;"readonly"===l&&(l="readOnly"),this[l]=!0}}};
+import $ from "../utils.js"
+import "./radio-item.js"
+
+export default class Radio extends HTMLElement  {
+  
+    
+  static get observedAttributes() {
+    return ["value"]
+  }
+
+  props = {
+    value: null
+  }
+  
+
+  constructor() {
+    super();
+    
+    Object.defineProperty(this, 'root', {
+      value: this.attachShadow({ mode: 'open' }),
+      writable: true,
+      enumerable: false,
+      configurable: true
+    })
+
+    this.root.innerHTML = `<style>* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0; }
+
+::before,
+::after {
+  box-sizing: border-box; }
+
+:host {
+  --color-teal-1: #4db6ac;
+  --color-teal-2: #26a69a;
+  --color-teal-3: #009688;
+  --color-green-1: #81c784;
+  --color-green-2: #66bb6a;
+  --color-green-3: #4caf50;
+  --color-purple-1: #9575cd;
+  --color-purple-2: #9575cd;
+  --color-purple-3: #673ab7;
+  --color-blue-1: #64b5f6;
+  --color-blue-2: #42a5f5;
+  --color-blue-3: #2196f3;
+  --color-red-1: #ff5061;
+  --color-red-2: #eb3b48;
+  --color-red-3: #ce3742;
+  --color-orange-1: #ffb618;
+  --color-orange-2: #f39c12;
+  --color-orange-3: #e67e22;
+  --color-plain-1: #f2f5fc;
+  --color-plain-2: #e8ebf4;
+  --color-plain-3: #dae1e9;
+  --color-grey-1: #bdbdbd;
+  --color-grey-2: #9e9e9e;
+  --color-grey-3: #757575;
+  --color-dark-1: #62778d;
+  --color-dark-2: #526273;
+  --color-dark-3: #425064; }
+
+:host {
+  display: inline-flex; }
+</style>
+  <slot />
+`
+      
+  }
+
+  _updateChildrenStat() {
+    Array.from(this.children).forEach(it => {
+      if (it.tagName === 'WC-RADIO-ITEM' && it.root) {
+        if (it.value === this.props.value) {
+          it.checked = true
+        } else {
+          it.checked = false
+        }
+      }
+    })
+  }
+
+  get value() {
+    return this.props.value
+  }
+
+  set value(val) {
+    if (val === this.props.value) {
+      return
+    }
+    this.props.value = val
+    this._updateChildrenStat()
+  }
+
+  connectedCallback() {
+    this._pickedFn = $.bind(this, 'child-picked', ev => {
+      log('radio picked: ', ev.detail)
+      this.value = ev.detail
+      this.dispatchEvent(new CustomEvent('input'))
+    })
+  }
+
+  disconnectedCallback() {
+    $.unbind(this, 'child-picked', this._pickedFn)
+  }
+
+  attributeChangedCallback(name, old, val) {
+if (val === null || old === val) {return}
+    switch (name) {
+      case 'value':
+        this.value = val
+        break
+    }
+  }
+}
+
 
 if(!customElements.get('wc-radio')){
   customElements.define('wc-radio', Radio)

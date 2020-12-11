@@ -9,6 +9,7 @@
 import '/lib/anot.js'
 import '/lib/form/button.js'
 import '/lib/scroll/index.js'
+import '/lib/chart/rank.js'
 import '/lib/canvas-draw.js'
 
 import layer from '/lib/layer/index.js'
@@ -18,7 +19,7 @@ const log = console.log
 
 const { ipcRenderer } = require('electron')
 
-// const WIN = remote.getCurrentWindow()
+// http://fund.eastmoney.com/pingzhongdata/161725.js?v=20201209153939
 
 const $doc = Anot(document)
 
@@ -59,6 +60,72 @@ function getTableData(str) {
 Anot({
   $id: 'app',
   state: {
+    curr: {
+      code: '161725',
+      name: '招商中证白酒指数分级',
+      last60: [
+        1.56,
+        2.81,
+        0.82,
+        -0.18,
+        -1.67,
+        -2.34,
+        1.36,
+        -1.52,
+        -0.92,
+        -0.49,
+        -1.74,
+        0.03,
+        1.15,
+        -0.21,
+        0.46,
+        1.45,
+        5.54,
+        1.7,
+        -0.33,
+        -0.11,
+        -1.11,
+        -0.76,
+        3.16,
+        0.32,
+        1.85,
+        -2.54,
+        -1.08,
+        0.91,
+        3.27,
+        2.84,
+        -2.83,
+        1.67,
+        1.1,
+        0.48,
+        1.89,
+        -0.66,
+        1.91,
+        2.15,
+        0.12,
+        1.75,
+        -3.43,
+        3.88,
+        -1.37,
+        -1.62,
+        0.38,
+        1.49,
+        1.03,
+        0.6,
+        -3.51,
+        0.5,
+        0.6,
+        -3.01,
+        0.87,
+        -0.03,
+        0.99,
+        3.4,
+        0.32,
+        1.53,
+        -0.46,
+        0.84
+      ].join(',')
+    },
     list: [],
     $dict: {}
   },

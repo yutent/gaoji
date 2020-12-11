@@ -9,32 +9,56 @@
   <link href="/css/app.css" rel="stylesheet">
   <script src="/js/app.js" type="module"></script>
 </head>
-<body class="do-fn-noselect">
+<body class="noselect">
 
   <div class="app" anot="app">
-    <wc-icon class="close" color="red" is="close" @click="close"></wc-icon>
-    <wc-icon class="load" color="red" is="load" @click="updateGays"></wc-icon>
-    <wc-icon class="option" is="option" @click="addGay"></wc-icon>
 
-    <wc-scroll class="list">
-      <section class="item" :for="it in list">
-        <div class="info"  @dblclick="removeGay(it)">
-          <h3 class="do-fn-ell" :text="it.name"></h3>
-          <cite :text="it.code"></cite>
-        </div>
+    <aside class="sidebar app-drag">
+      <wc-icon class="app-nodrag item stat active" is="chart"></wc-icon>
+      <wc-icon class="app-nodrag item opt" is="menu-dot"></wc-icon>
+    </aside>
 
-        <canvas class="last-days" width="128" height="60" :draw="it.last"></canvas>
-
-        <div class="today">
-          <span class="money" :text="it.curr"></span>
-          <span 
-            class="percent" 
-            :class="{red: it.percent > 0, green: it.percent < 0}" 
-            :text="it.percent + '%'">
-          </span>
-        </div>
+    <div class="select-box">
+      <section class="form">
+        <wc-input maxlength="6" placeholder="输入编号搞新基" round size="mini"></wc-input>
+        <wc-button circle size="mini" color="orange" icon="plus"></wc-button>
       </section>
-    </wc-scroll>
+      <wc-scroll class="list">
+        <item 
+          class="item" 
+          :class="{active: curr.code === it.code}" 
+          :for="it in list">
+          <strong class="text-ell" :text="it.name"></strong>
+          <section>
+            <cite :text="it.code"></cite>
+            <span 
+              class="percent" 
+              :class="{red: it.percent > 0, green: it.percent < 0}" 
+              :text="it.percent + '%'">
+            </span>
+          </section>
+        </item>
+      </wc-scroll>
+    </div>
+
+
+    <div class="detail">
+      <section class="title app-drag">
+        [{{curr.code}}] {{curr.name}}
+      </section>
+
+      <fieldset class="card">
+        <legend>60天红绿榜</legend>
+        <wc-rank :attr-list="curr.last60"></wc-rank>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>单位净值走势</legend>
+        <wc-rank :attr-list="curr.last60"></wc-rank>
+      </fieldset>
+
+    </div>
+
   </div>
   
   

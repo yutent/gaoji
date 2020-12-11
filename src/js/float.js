@@ -77,8 +77,14 @@ Anot({
       this.$dict[it.code] = it
     }
 
-    app.on('float-visible', function(data) {
-      console.log(data)
+    app.on('float-visible', data => {
+      var time = +Anot.ss('last_update') || 0
+      var now = Date.now()
+      // 如果离上次更新超过15分钟, 则自动更新
+      if (now - time > 15 * 60 * 1000) {
+        this.updateGays()
+        Anot.ss('last_update', now)
+      }
     })
   },
   methods: {

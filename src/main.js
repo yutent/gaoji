@@ -103,6 +103,13 @@ app.once('ready', () => {
     app.__float__ = null
     app.exit()
   })
+
+  // mac专属事件,点击dock栏图标,可激活窗口
+  app.on('activate', _ => {
+    if (app.__main__) {
+      app.__main__.restore()
+    }
+  })
 })
 
 ipcMain.on('app', (ev, conn) => {

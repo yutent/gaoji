@@ -19,17 +19,16 @@
           <cite :text="it.code"></cite>
         </div>
 
-        <canvas class="last-days" width="128" height="60" :draw="it.last"></canvas>
-
         <div class="today">
-          <span class="money" :text="it.curr"></span>
+          <span class="money" :text="'¥' + it.cm"></span>
           <span 
             class="percent" 
-            :class="{red: it.percent > 0, green: it.percent < 0}" 
-            :text="it.percent + '%'">
+            :class="{red: it.cp > 0, green: it.cp < 0}" 
+            :text="it.cp + '%'">
           </span>
         </div>
       </section>
+      <section :if="list.length === 0" class="item">啥基都没有...</section>
     </wc-scroll>
   </div>
   

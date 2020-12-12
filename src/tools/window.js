@@ -34,19 +34,13 @@ exports.createMainWindow = function(icon) {
     show: false
   })
 
-  // 然后加载应用的 index.html。
-
   win.loadURL('app://local/index.html')
-
-  // createAppTray(win)
-  // ctrlTrayBtn(win)
-  // createLrcTray(win)
 
   createMenu(win)
 
   win.on('ready-to-show', _ => {
     win.show()
-    win.openDevTools()
+    // win.openDevTools()
   })
 
   win.on('close', ev => {
@@ -60,18 +54,15 @@ exports.createMainWindow = function(icon) {
 // 创建悬浮窗口
 exports.createFloatWindow = function() {
   var win = new BrowserWindow({
-    width: 320,
+    width: 280,
     height: 360,
     resizable: false,
     maximizable: false,
     frame: false,
-    // transparent: true,
-    // hasShadow: false,
     show: false,
     vibrancy: 'hud',
     visualEffectState: 'active',
     webPreferences: {
-      // webSecurity: false,
       experimentalFeatures: true,
       nodeIntegration: true,
       spellcheck: false

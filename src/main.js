@@ -4,7 +4,14 @@
  * @date 2019/09/16 20:51:19
  */
 
-const { app, BrowserWindow, protocol, ipcMain, net } = require('electron')
+const {
+  app,
+  BrowserWindow,
+  protocol,
+  ipcMain,
+  net,
+  Notification
+} = require('electron')
 const path = require('path')
 const fs = require('iofs')
 
@@ -23,6 +30,8 @@ const MIME_TYPES = {
 }
 
 const ROOT = __dirname
+
+var timer
 
 function fetch(url) {
   return new Promise((y, n) => {
@@ -45,6 +54,22 @@ function fetch(url) {
 
     conn.end()
   })
+}
+
+function ring() {
+  var n = 5
+  var t = setInterval(() => {
+    var notify = new Notification({
+      title: '搞基⏰',
+      subtitle: '神奇的2点半到啦',
+      body: '神奇的2点半到啦, 该加仓的加仓, 该卖的卖啦'
+    })
+    notify.show()
+    n--
+    if (n === 0) {
+      clearInterval(t)
+    }
+  }, 1000)
 }
 
 /* ----------------------------------------------------- */
@@ -85,5 +110,18 @@ ipcMain.on('app', (ev, conn) => {
     fetch(conn.data).then(r => {
       ev.returnValue = r
     })
+  } else if (conn.type === 'notify') {
+    clearTimeout(timer)
+    var t1 = Date.now()
+    var t2 = new Date()
+    t2.setHours(14)
+    t2.setMinutes(0)
+    t2.setSeconds(0)
+
+    if (t2.getTime() - t1 > 0) {
+      timer = setTimeout(ring, t2.getTime() - t1)
+    }
+
+    ev.returnValue = true
   }
 })

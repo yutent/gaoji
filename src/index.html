@@ -15,26 +15,33 @@
 
     <aside class="sidebar app-drag">
       <wc-icon class="app-nodrag item stat active" is="chart"></wc-icon>
-      <wc-icon class="app-nodrag item opt" is="menu-dot"></wc-icon>
+      <wc-icon class="app-nodrag item opt" is="menu-dot" @click="showPreferencesPanel"></wc-icon>
     </aside>
 
     <div class="select-box">
       <section class="form">
-        <wc-input maxlength="6" placeholder="输入编号搞新基" round size="mini"></wc-input>
-        <wc-button circle size="mini" color="orange" icon="plus"></wc-button>
+        <wc-input 
+          maxlength="6" 
+          placeholder="输入编号搞新基" 
+          round 
+          @submit="addGay"
+          :duplex="input"
+          size="mini">
+        </wc-input>
       </section>
       <wc-scroll class="list">
         <item 
           class="item" 
           :class="{active: curr.code === it.code}" 
+          @click="viewGay(it)"
           :for="it in list">
           <strong class="text-ell" :text="it.name"></strong>
           <section>
             <cite :text="it.code"></cite>
             <span 
               class="percent" 
-              :class="{red: it.percent > 0, green: it.percent < 0}" 
-              :text="it.percent + '%'">
+              :class="{red: it.cp > 0, green: it.cp < 0}" 
+              :text="it.cp + '%'">
             </span>
           </section>
         </item>
@@ -42,22 +49,69 @@
     </div>
 
 
-    <div class="detail">
+    <div class="detail" :class="{blur: !curr.code}">
       <section class="title app-drag">
-        [{{curr.code}}] {{curr.name}}
+        <span>[{{curr.code}}] {{curr.name}}</span>
+        <span>
+          <wc-button 
+            circle 
+            size="mini"
+            @click="removeGay"
+            icon="trash">
+          </wc-button>
+          <wc-button 
+            circle 
+            color="red" 
+            size="mini"
+            @click="updateGay"
+            icon="eye">
+          </wc-button>
+        </span>
       </section>
 
       <fieldset class="card">
-        <legend>60天红绿榜</legend>
-        <wc-rank :attr-list="curr.last60"></wc-rank>
+        <legend>实时数据</legend>
+        <wc-rank :attr-stat="curr.stat"></wc-rank>
       </fieldset>
 
       <fieldset class="card">
         <legend>单位净值走势</legend>
-        <wc-rank :attr-list="curr.last60"></wc-rank>
+        <wc-line :attr-list="curr.line"></wc-line>
       </fieldset>
 
     </div>
+
+    <wc-layer ref="pre" mask mask-close radius="10px" >
+      <div class="preferences">
+        <div class="titlebar">
+          <div class="title">hello</div>
+          <nav>
+            <span :class="{active: preferences.tab === 1}" @click="switchTab(1)">
+              <wc-icon is="setting"></wc-icon>
+              常规
+            </span>
+            <span :class="{active: preferences.tab === 2}" @click="switchTab(2)">
+              <wc-icon is="info"></wc-icon>
+              关于
+            </span>
+          </nav>
+        </div>
+
+        <div class="tab-panel" :visible="preferences.tab === 1">
+          <section class="field">
+            <span class="label">神奇的2点半提醒</span>
+            <wc-switch :duplex="preferences.notify"></wc-switch>
+          </section>
+        </div>
+
+        <div class="tab-panel" :visible="preferences.tab === 2">
+          <p>“搞基爱啪啪” 是一款开源的, 非专业的搞基软件, 上面的数据全来自网络, 不对准确性作任何保证. </p>
+          <p>搞基有风险, 入行需谨慎. 你亏了别找我, 赚了可以给我发红包.</p>
+          
+        </div>
+        
+      </div>
+    </wc-layer>
 
   </div>
   

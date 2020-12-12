@@ -13,7 +13,7 @@ module.exports = function(win) {
 
   win.__TRAY__.on('click', _ => {
     var b = win.__TRAY__.getBounds()
-    win.setBounds({ x: b.x - 145, y: b.y + b.height })
+    win.setBounds({ x: b.x - 120, y: b.y + b.height })
     win.show()
     win.focus()
     win.webContents.send('app', { type: 'float-visible', data: null })

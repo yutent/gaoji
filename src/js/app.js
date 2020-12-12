@@ -8,20 +8,17 @@
 
 import '/lib/anot.js'
 import '/lib/form/button.js'
+import '/lib/form/switch.js'
 import '/lib/scroll/index.js'
 import '/lib/chart/rank.js'
-import '/lib/canvas-draw.js'
+import '/lib/chart/line.js'
 
 import layer from '/lib/layer/index.js'
 import Utils from '/lib/utils.js'
 
+import app from '/lib/socket.js'
+
 const log = console.log
-
-const { ipcRenderer } = require('electron')
-
-// http://fund.eastmoney.com/pingzhongdata/161725.js?v=20201209153939
-
-const $doc = Anot(document)
 
 function getJsonp(str) {
   if (~str.indexOf('jsonpgz')) {
@@ -30,216 +27,255 @@ function getJsonp(str) {
   return false
 }
 
-function getTableData(str) {
-  var match = str.match(/<tbody[^]*?>.*?<\/tbody>/)
-  var table = document.createElement('table')
-  var list = []
-  var max = 0
-  var min = 99
-
-  table.innerHTML = match[0]
-  list = Array.from(table.children[0].children)
-    .map(it => {
-      let m = +it.children[2].textContent
-      if (m > max) {
-        max = m
-      }
-      if (m < min) {
-        min = m
-      }
-      return { m }
-    })
-    .reverse()
-
-  list.forEach(it => {
-    it.h = +(((it.m - min) * 60) / (max - min)).toFixed(2)
-  })
-  return list
+function getLineStat(str) {
+  return new Function(`${str}; return {line: Data_netWorthTrend.map(it => ({
+    x: ~~(it.x/1000),
+    y: +(it.y * 10000).toFixed(0),
+    p: it.equityReturn
+  })), e1: +syl_1y, e3: +syl_3y, e6: +syl_6y, e12: +syl_1n}`)()
 }
 
 Anot({
   $id: 'app',
   state: {
+    input: '',
     curr: {
-      code: '161725',
-      name: '招商中证白酒指数分级',
-      last60: [
-        1.56,
-        2.81,
-        0.82,
-        -0.18,
-        -1.67,
-        -2.34,
-        1.36,
-        -1.52,
-        -0.92,
-        -0.49,
-        -1.74,
-        0.03,
-        1.15,
-        -0.21,
-        0.46,
-        1.45,
-        5.54,
-        1.7,
-        -0.33,
-        -0.11,
-        -1.11,
-        -0.76,
-        3.16,
-        0.32,
-        1.85,
-        -2.54,
-        -1.08,
-        0.91,
-        3.27,
-        2.84,
-        -2.83,
-        1.67,
-        1.1,
-        0.48,
-        1.89,
-        -0.66,
-        1.91,
-        2.15,
-        0.12,
-        1.75,
-        -3.43,
-        3.88,
-        -1.37,
-        -1.62,
-        0.38,
-        1.49,
-        1.03,
-        0.6,
-        -3.51,
-        0.5,
-        0.6,
-        -3.01,
-        0.87,
-        -0.03,
-        0.99,
-        3.4,
-        0.32,
-        1.53,
-        -0.46,
-        0.84
-      ].join(',')
+      code: '',
+      name: '',
+      stat: '',
+      line: ''
     },
     list: [],
-    $dict: {}
+    $dict: {},
+    preferences: {
+      tab: 1,
+      notify: Anot.ls('notify') === '1'
+    }
   },
 
   watch: {
-    'chapter.content'() {
-      this.calcuteWords = this.chapter.content.length
-    },
-    currCate() {
-      this.renderChapterList()
+    'preferences.notify'(v) {
+      Anot.ls('notify', v ^ 0)
+      if (v) {
+        app.dispatch('notify')
+      }
     }
   },
+
   mounted() {
-    // WIN.on('blur', _ => {
-    //   WIN.hide()
-    // })
+    var gays = Anot.ls('gays') || '{}'
+    var list = []
+    var old = this.syncOldStat()
 
-    var watch_list = Anot.ls('watch_list') || '[]'
+    if (old === false) {
+      gays = JSON.parse(gays)
 
-    watch_list = JSON.parse(watch_list)
+      for (let code in gays) {
+        let { name, cm, cp, t } = gays[code]
+        list.push({ code, name, cm, cp, t })
+        this.$dict[code] = 1
+      }
+      list.sort((a, b) => b.cp - a.cp)
 
-    this.list = watch_list
+      this.list = list
+    }
 
-    for (let it of this.list) {
-      this.$dict[it.code] = it
+    if (this.preferences.notify) {
+      app.dispatch('notify')
     }
   },
   methods: {
-    close() {
-      // WIN.close()
+    syncOldStat() {
+      var old = Anot.ls('watch_list')
+      var list = []
+      var dict = {}
+
+      if (old) {
+        old = JSON.parse(old)
+        for (let it of old) {
+          dict[it.code] = {
+            name: it.name,
+            cm: +it.curr,
+            cp: it.percent,
+            t: Date.now()
+          }
+          list.push({ code: it.code, ...dict[it.code] })
+        }
+
+        list.sort((a, b) => b.cp - a.cp)
+        this.list = list
+
+        Anot.ls('gays', dict)
+        Anot.ls('watch_list', null)
+        return true
+      }
+      return false
     },
-    getTodayStat(id) {
-      var res = ipcRenderer.sendSync(
-        'net',
+
+    showPreferencesPanel() {
+      this.$refs.pre.show()
+    },
+
+    switchTab(n) {
+      this.preferences.tab = n
+    },
+
+    getGayStat(id) {
+      var res = app.dispatch(
+        'fetch',
         `https://fundgz.1234567.com.cn/js/${id}.js`
       )
-
       return getJsonp(res)
     },
 
-    getLastMonth(id) {
-      var res = ipcRenderer.sendSync(
-        'net',
-        `https://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&per=42&code=${id}`
-      )
-      return getTableData(res)
+    addGay() {
+      var code = this.input
+      var gay
+
+      if (this.$dict[code]) {
+        layer.toast('这个鸡精在列表呢~~~', 'warn')
+        this.input = ''
+        return
+      }
+
+      if (code.length < 6) {
+        return
+      }
+
+      if (/[^\d]/.test(code)) {
+        layer.toast('只能通过鸡精编号添加', 'error')
+        this.input = ''
+        return
+      }
+
+      gay = this.getGayStat(code)
+
+      if (gay) {
+        let tmp = {
+          code: gay.fundcode,
+          name: gay.name,
+          cm: +gay.gsz,
+          cp: +gay.gszzl,
+          t: Date.now()
+        }
+        this.input = ''
+        this.list.push(tmp)
+        this.$dict[tmp.code] = 1
+        this.list.sort((a, b) => b.cp - a.cp)
+        this.saveCache()
+      } else {
+        layer.toast('鸡精不存在', 'error')
+      }
     },
 
-    addGay() {
-      layer
-        .prompt('请输入鸡精代号', (val, done) => {
-          if (val.trim()) {
-            done()
-          }
-        })
-        .then(id => {
-          if (this.$dict[id]) {
+    updateGay() {
+      var { code, stat } = this.curr
+      var info = this.getGayStat(code)
+
+      for (let it of this.list) {
+        if (it.code === code) {
+          let d
+
+          it.cm = +info.gsz
+          it.cp = +info.gszzl
+
+          this.list.sort((a, b) => b.cp - a.cp)
+
+          d = new Date(info.gztime.slice(0, 10) + ' 00:00:00')
+          d = ~~(d.getTime() / 1000) - 24 * 3600
+
+          // 如果走势最后的日期比当前最新的小, 则全量更新
+          if (it.t < d) {
+            Anot.ls(code, null)
+            this.viewGay(it)
+            console.log('update all stat...')
             return
           }
-          Anot.nextTick(_ => {
-            var info = this.getTodayStat(id)
-            var last
-            if (info) {
-              last = this.getLastMonth(id)
-              var tmp = {
-                code: info.fundcode,
-                name: info.name,
-                yesterday: info.dwjz,
-                curr: info.gsz,
-                percent: +info.gszzl,
-                last
-              }
-              this.list.unshift(tmp)
-              this.$dict[tmp.code] = this.list[0]
-              Anot.ls('watch_list', this.list.$model)
-            } else {
-              layer.toast('鸡精不存在', 'error')
-            }
-          })
-        })
-        .catch(Anot.noop)
-    },
 
-    updateGay(item) {
-      var info = this.getTodayStat(item.code)
-      if (info.dwjz !== item.yesterday) {
-        item.yesterday = info.dwjz
-        item.last = this.getLastMonth(item.code)
+          stat = JSON.parse(stat)
+          stat.cm = it.cm
+          stat.cp = it.cp
+          this.curr.stat = JSON.stringify(stat)
+
+          this.saveCache()
+          layer.toast('数据更新成功', 'success')
+          Anot.ss('last_update', Date.now())
+
+          return
+        }
       }
-      item.curr = info.gsz
-      item.percent = +info.gszzl
     },
 
-    removeGay(item) {
+    removeGay() {
+      var { code, name } = this.curr
       layer
-        .confirm(`是否移除[${item.name.slice(0, 5)}...]?`)
+        .confirm(`是否移除「${name}」?`)
         .then(_ => {
-          item.$ups.it.$remove()
-          delete this.$dict[item.code]
-          Anot.ls('watch_list', this.list.$model)
+          for (let it of this.list) {
+            if (it.code === code) {
+              this.list.remove(it)
+              delete this.$dict[code]
+              Anot.ls(code, null)
+              this.saveCache()
+              break
+            }
+          }
+          this.viewGay(this.list[0])
         })
         .catch(Anot.noop)
     },
 
-    updateGays() {
+    saveCache() {
+      var dict = {}
       for (let it of this.list) {
-        this.updateGay(it)
+        var { code, name, cm, cp, t } = it
+        dict[code] = { name, cm, cp, t }
+      }
+      Anot.ls('gays', dict)
+    },
+
+    viewGay(item) {
+      var gay = Anot.ls(item.code)
+      var rank, line
+      var { cm, cp, t } = item
+
+      this.curr.code = item.code
+      this.curr.name = item.name
+
+      if (gay) {
+        gay = JSON.parse(gay)
+        var last = gay.line[gay.line.length - 1].x
+        if (last < t) {
+          gay = null
+        }
       }
 
-      this.list.sort((a, b) => {
-        return b.percent - a.percent
-      })
+      if (!gay) {
+        gay = app.dispatch(
+          'fetch',
+          `http://fund.eastmoney.com/pingzhongdata/${
+            item.code
+          }.js?v=${Date.now()}`
+        )
+        gay = getLineStat(gay)
+        item.t = gay.line[gay.line.length - 1].x
+        this.saveCache()
+        Anot.ls(item.code, JSON.stringify(gay))
+      }
 
-      Anot.ls('watch_list', this.list.$model)
+      rank = gay.line.slice(-60).map(_ => _.p)
+      line = JSON.stringify(gay.line)
+
+      this.curr.stat = JSON.stringify({
+        rank,
+        e1: gay.e1,
+        e3: gay.e3,
+        e6: gay.e6,
+        e12: gay.e12,
+        cm,
+        cp
+      })
+      this.curr.line = line
     }
   }
 })

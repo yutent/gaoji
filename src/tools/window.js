@@ -6,9 +6,6 @@
 
 const { BrowserWindow } = require('electron')
 
-const createMenu = require('./menu')
-const createTay = require('./tray')
-
 /**
  * 应用主窗口
  */
@@ -36,12 +33,10 @@ exports.createMainWindow = function(icon) {
 
   win.loadURL('app://local/index.html')
 
-  createMenu(win)
-
-  win.on('ready-to-show', _ => {
-    win.show()
-    // win.openDevTools()
-  })
+  // win.on('ready-to-show', _ => {
+  //   win.show()
+  //   win.openDevTools()
+  // })
 
   win.on('close', ev => {
     ev.preventDefault()
@@ -75,7 +70,6 @@ exports.createFloatWindow = function() {
     win.hide()
   })
 
-  createTay(win)
   win.loadURL('app://local/float.html')
 
   return win

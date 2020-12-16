@@ -74,6 +74,7 @@ Anot({
       }
       this.list.sort((a, b) => b.cp - a.cp)
       this.saveCache()
+      app.dispatch('data-reload')
     },
     saveCache() {
       var dict = {}

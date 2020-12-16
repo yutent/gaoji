@@ -4,18 +4,39 @@
  * @date 2020/12/10 19:30:20
  */
 
-const { Tray } = require('electron')
+const { Tray, Menu } = require('electron')
 const path = require('path')
 const ROOT = __dirname
 
-module.exports = function(win) {
-  win.__TRAY__ = new Tray(path.join(ROOT, '../images/tray.png'))
+module.exports = function(mini, main) {
+  var menuList = Menu.buildFromTemplate([
+    {
+      label: '显示主窗口',
+      click(a, b, ev) {
+        main.restore()
+      }
+    },
+    {
+      label: '不搞基了',
+      accelerator: 'Command+Q',
+      click(a, b, ev) {
+        main.destroy()
+      }
+    }
+  ])
+  var tray = new Tray(path.join(ROOT, '../images/tray.png'))
 
-  win.__TRAY__.on('click', _ => {
-    var b = win.__TRAY__.getBounds()
-    win.setBounds({ x: b.x - 120, y: b.y + b.height })
-    win.show()
-    win.focus()
-    win.webContents.send('app', { type: 'float-visible', data: null })
+  tray.on('click', _ => {
+    var b = tray.getBounds()
+    mini.setBounds({ x: b.x - 120, y: b.y + b.height })
+    mini.show()
+    mini.focus()
+    mini.webContents.send('app', { type: 'float-visible', data: null })
   })
+
+  tray.on('right-click', _ => {
+    tray.popUpContextMenu(menuList)
+  })
+
+  main.__tray__ = tray
 }

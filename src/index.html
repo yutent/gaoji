@@ -11,7 +11,7 @@
 </head>
 <body class="noselect">
 
-  <div class="app" anot="app">
+  <div class="app" anot="app" :class="{loading: loading}">
 
     <aside class="sidebar app-drag">
       <wc-icon class="app-nodrag item stat active" is="chart"></wc-icon>
@@ -63,7 +63,7 @@
             circle 
             color="red" 
             size="mini"
-            @click="updateGay"
+            @click="updateGays"
             icon="eye">
           </wc-button>
         </span>

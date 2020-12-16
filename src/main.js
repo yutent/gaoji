@@ -16,6 +16,8 @@ const path = require('path')
 const fs = require('iofs')
 
 const { createMainWindow, createFloatWindow } = require('./tools/window')
+const createMenu = require('./tools/menu')
+const createTay = require('./tools/tray')
 
 const MIME_TYPES = {
   '.js': 'text/javascript',
@@ -82,7 +84,7 @@ protocol.registerSchemesAsPrivileged([
 
 /* ----------------------------------------------------- */
 
-// app.dock.hide()
+app.dock.hide()
 
 //  初始化应用
 app.once('ready', () => {
@@ -98,6 +100,9 @@ app.once('ready', () => {
   app.__main__ = createMainWindow(path.resolve(ROOT, './images/app.png'))
   app.__float__ = createFloatWindow()
 
+  createMenu(app.__main__)
+  createTay(app.__float__, app.__main__)
+
   app.__main__.on('closed', () => {
     app.__main__ = null
     app.__float__ = null
@@ -105,30 +110,39 @@ app.once('ready', () => {
   })
 
   // mac专属事件,点击dock栏图标,可激活窗口
-  app.on('activate', _ => {
-    if (app.__main__) {
-      app.__main__.restore()
-    }
-  })
+  // app.on('activate', _ => {
+  //   if (app.__main__) {
+  //     app.__main__.restore()
+  //   }
+  // })
 })
 
 ipcMain.on('app', (ev, conn) => {
-  if (conn.type === 'fetch') {
-    fetch(conn.data).then(r => {
-      ev.returnValue = r
-    })
-  } else if (conn.type === 'notify') {
-    clearTimeout(timer)
-    var t1 = Date.now()
-    var t2 = new Date()
-    t2.setHours(14)
-    t2.setMinutes(0)
-    t2.setSeconds(0)
+  switch (conn.type) {
+    case 'fetch':
+      fetch(conn.data).then(r => {
+        ev.returnValue = r
+      })
+      break
 
-    if (t2.getTime() - t1 > 0) {
-      timer = setTimeout(ring, t2.getTime() - t1)
-    }
+    case 'notify':
+      clearTimeout(timer)
+      var t1 = Date.now()
+      var t2 = new Date()
+      t2.setHours(14)
+      t2.setMinutes(0)
+      t2.setSeconds(0)
 
-    ev.returnValue = true
+      if (t2.getTime() - t1 > 0) {
+        timer = setTimeout(ring, t2.getTime() - t1)
+      }
+
+      ev.returnValue = true
+      break
+
+    case 'data-reload':
+      app.__main__.webContents.send('app', { type: 'data-reload', data: null })
+      ev.returnValue = true
+      break
   }
 })

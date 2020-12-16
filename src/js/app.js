@@ -35,6 +35,12 @@ function getLineStat(str) {
   })), e1: +syl_1y, e3: +syl_3y, e6: +syl_6y, e12: +syl_1n}`)()
 }
 
+function sleep(ms) {
+  return new Promise(_ => setTimeout(_, ms))
+}
+
+window.app = app
+
 Anot({
   $id: 'app',
   state: {
@@ -47,6 +53,7 @@ Anot({
     },
     list: [],
     $dict: {},
+    loading: false,
     preferences: {
       tab: 1,
       notify: Anot.ls('notify') === '1'
@@ -63,28 +70,36 @@ Anot({
   },
 
   mounted() {
-    var gays = Anot.ls('gays') || '{}'
-    var list = []
     var old = this.syncOldStat()
 
     if (old === false) {
-      gays = JSON.parse(gays)
-
-      for (let code in gays) {
-        let { name, cm, cp, t } = gays[code]
-        list.push({ code, name, cm, cp, t })
-        this.$dict[code] = 1
-      }
-      list.sort((a, b) => b.cp - a.cp)
-
-      this.list = list
+      this.reloadGays()
     }
 
     if (this.preferences.notify) {
       app.dispatch('notify')
     }
+
+    app.on('data-reload', data => {
+      this.reloadGays()
+    })
   },
   methods: {
+    reloadGays() {
+      var gays = Anot.ls('gays') || '{}'
+      var list = []
+      gays = JSON.parse(gays)
+
+      for (let code in gays) {
+        let { name, cm, cp, t } = gays[code]
+        list.push({ code, name, cm, cp, t: t || 0 })
+        this.$dict[code] = 1
+      }
+      list.sort((a, b) => b.cp - a.cp)
+
+      this.list = list
+    },
+
     syncOldStat() {
       var old = Anot.ls('watch_list')
       var list = []
@@ -168,42 +183,49 @@ Anot({
       }
     },
 
-    updateGay() {
+    async updateGays() {
       var { code, stat } = this.curr
-      var info = this.getGayStat(code)
 
+      this.loading = true
       for (let it of this.list) {
+        //
+        let info = this.getGayStat(it.code)
+        let time, needUpdate
+
+        it.cm = +info.gsz
+        it.cp = +info.gszzl
+
+        time = new Date(info.gztime.slice(0, 10) + ' 00:00:00')
+        time = ~~(time.getTime() / 1000) - 24 * 3600
+
+        // 如果走势最后的日期比当前最新的小, 则全量更新
+        if (it.t < time) {
+          it.t = time
+          needUpdate = this.updateLine(it.code)
+        }
+
         if (it.code === code) {
-          let d
-
-          it.cm = +info.gsz
-          it.cp = +info.gszzl
-
-          this.list.sort((a, b) => b.cp - a.cp)
-
-          d = new Date(info.gztime.slice(0, 10) + ' 00:00:00')
-          d = ~~(d.getTime() / 1000) - 24 * 3600
-
-          // 如果走势最后的日期比当前最新的小, 则全量更新
-          if (it.t < d) {
-            Anot.ls(code, null)
-            this.viewGay(it)
-            console.log('update all stat...')
-            return
-          }
-
           stat = JSON.parse(stat)
           stat.cm = it.cm
           stat.cp = it.cp
+          if (needUpdate) {
+            stat.rank = needUpdate.line.slice(-60).map(_ => _.p)
+            stat.e1 = needUpdate.e1
+            stat.e3 = needUpdate.e3
+            stat.e6 = needUpdate.e6
+            stat.e12 = needUpdate.e12
+            this.curr.line = JSON.stringify(needUpdate.line)
+          }
           this.curr.stat = JSON.stringify(stat)
-
-          this.saveCache()
-          layer.toast('数据更新成功', 'success')
-          Anot.ss('last_update', Date.now())
-
-          return
         }
+        await sleep(500)
       }
+      //
+      this.loading = false
+      Anot.ss('last_update', Date.now())
+      layer.toast('数据更新成功', 'success')
+      this.list.sort((a, b) => b.cp - a.cp)
+      this.saveCache()
     },
 
     removeGay() {
@@ -234,6 +256,16 @@ Anot({
       Anot.ls('gays', dict)
     },
 
+    updateLine(code) {
+      var gay = app.dispatch(
+        'fetch',
+        `http://fund.eastmoney.com/pingzhongdata/${code}.js?v=${Date.now()}`
+      )
+      gay = getLineStat(gay)
+      Anot.ls(code, JSON.stringify(gay))
+      return gay
+    },
+
     viewGay(item) {
       var gay = Anot.ls(item.code)
       var rank, line
@@ -251,16 +283,9 @@ Anot({
       }
 
       if (!gay) {
-        gay = app.dispatch(
-          'fetch',
-          `http://fund.eastmoney.com/pingzhongdata/${
-            item.code
-          }.js?v=${Date.now()}`
-        )
-        gay = getLineStat(gay)
+        gay = this.updateLine(item.code)
         item.t = gay.line[gay.line.length - 1].x
         this.saveCache()
-        Anot.ls(item.code, JSON.stringify(gay))
       }
 
       rank = gay.line.slice(-60).map(_ => _.p)

@@ -144,5 +144,10 @@ ipcMain.on('app', (ev, conn) => {
       app.__main__.webContents.send('app', { type: 'data-reload', data: null })
       ev.returnValue = true
       break
+
+    case 'devtools':
+      app.__main__.openDevTools()
+      ev.returnValue = true
+      break
   }
 })

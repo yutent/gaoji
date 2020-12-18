@@ -153,6 +153,11 @@ Anot({
         return
       }
 
+      if (code === 'debug') {
+        this.input = ''
+        return app.dispatch('devtools')
+      }
+
       if (code.length < 6) {
         return
       }

@@ -130,7 +130,7 @@ ipcMain.on('app', (ev, conn) => {
       var t1 = Date.now()
       var t2 = new Date()
       t2.setHours(14)
-      t2.setMinutes(0)
+      t2.setMinutes(30)
       t2.setSeconds(0)
 
       if (t2.getTime() - t1 > 0) {

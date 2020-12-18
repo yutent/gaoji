@@ -29,6 +29,11 @@ Anot({
       var time = +Anot.ss('last_update') || 0
       var now = Date.now()
 
+      // 有触发小窗口显示时, 更新通知提醒
+      if (Anot.ls('notify') === '1') {
+        app.dispatch('notify')
+      }
+
       this.reloadGays()
       setTimeout(() => {
         // 如果离上次更新超过15分钟, 则自动更新

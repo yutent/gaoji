@@ -28,6 +28,10 @@ function getJsonp(str) {
 }
 
 function getLineStat(str) {
+  str = str.replace(
+    /.*var syl_1n(.*?)var Data_netWorthTrend([^;]*?);.*/,
+    'var syl_1n$1var Data_netWorthTrend$2;'
+  )
   return new Function(`${str}; return {line: Data_netWorthTrend.map(it => ({
     x: ~~(it.x/1000),
     y: +(it.y * 10000).toFixed(0),

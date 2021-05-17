@@ -1,6 +1,6 @@
 {
   "name": "io.yutent.gaystat",
-  "version": "2.1.3",
+  "version": "2.2.0",
   "description": "搞基数据",
   "main": "src/main.js",
   "scripts": {
@@ -26,7 +26,7 @@
       "version": "11.0.4",
       "mirror": "https://npm.taobao.org/mirrors/electron/"
     },
-    "files": ["src/**/*", "node_modules/iofs/*"],
+    "files": ["src/**/*", "node_modules/iofs/*", "node_modules/node-fetch/*"],
     "mac": {
       "category": "public.app-category.developer-tools",
       "target": "dmg",
@@ -39,6 +39,7 @@
     "electron-builder": "^22.1.0"
   },
   "dependencies": {
-    "iofs": "^1.3.2"
+    "iofs": "^1.5.2",
+    "node-fetch": "^2.6.1"
   }
 }

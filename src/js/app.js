@@ -144,6 +144,7 @@ Anot({
         'fetch',
         `https://fundgz.1234567.com.cn/js/${id}.js`
       )
+
       return getJsonp(res)
     },
 
@@ -200,6 +201,11 @@ Anot({
         //
         let info = this.getGayStat(it.code)
         let time, needUpdate
+
+        if (!info) {
+          console.log(it)
+          continue
+        }
 
         it.cm = +info.gsz
         it.cp = +info.gszzl

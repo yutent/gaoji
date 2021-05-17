@@ -14,6 +14,7 @@ const {
 } = require('electron')
 const path = require('path')
 const fs = require('iofs')
+const fetch = require('node-fetch')
 
 const { createMainWindow, createFloatWindow } = require('./tools/window')
 const createMenu = require('./tools/menu')
@@ -34,29 +35,6 @@ const MIME_TYPES = {
 const ROOT = __dirname
 
 var timer
-
-function fetch(url) {
-  return new Promise((y, n) => {
-    var conn = net.request(url)
-    var r = []
-
-    conn.on('response', res => {
-      res.on('data', c => {
-        r.push(c)
-      })
-
-      res.on('end', _ => {
-        y(Buffer.concat(r).toString())
-      })
-    })
-
-    conn.on('error', e => {
-      n(e)
-    })
-
-    conn.end()
-  })
-}
 
 function ring() {
   var n = 5
@@ -120,9 +98,14 @@ app.once('ready', () => {
 ipcMain.on('app', (ev, conn) => {
   switch (conn.type) {
     case 'fetch':
-      fetch(conn.data).then(r => {
-        ev.returnValue = r
+      fetch(conn.data, {
+        headers: {
+          'user-agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'
+        }
       })
+        .then(r => r.text())
+        .then(r => (ev.returnValue = r))
       break
 
     case 'notify':
